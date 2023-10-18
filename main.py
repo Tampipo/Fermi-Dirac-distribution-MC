@@ -7,6 +7,7 @@ def init(): #initialize parameters
     Ex=(hbar*2*np.pi)**2/(2*me*Lx**2*kb*T) #dimensionless energy in x direction
     Ey=(hbar*2*np.pi)**2/(2*me*Ly**2*kb*T) #y direction
     Ez=(hbar*2*np.pi)**2/(2*me*Lz**2*kb*T) #z direction
+    E_0 = min(Ex, Ey, Ez) 
     n_cut=-mp.log2(0.01)/E_0 #max number of states in a direction
     config_dict={} #initialize particle states
     n_x=0
