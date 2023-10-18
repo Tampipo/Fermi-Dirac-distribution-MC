@@ -1,15 +1,14 @@
 from config import *
 import numpy as np
+import math as mp
 print(N)
 
 def init(): #initialize parameters
     Ex=(hbar*2*np.pi)**2/(2*me*Lx**2*kb*T) #dimensionless energy in x direction
     Ey=(hbar*2*np.pi)**2/(2*me*Ly**2*kb*T) #y direction
     Ez=(hbar*2*np.pi)**2/(2*me*Lz**2*kb*T) #z direction
-    n_cut=0 #max number of states in a direction
-    return [Ex,Ey,Ez,n_cut]
-
-def init_states():
+    E_0 = min(Ex, Ey, Ez) 
+    n_cut=-mp.log2(0.01)/E_0 #max number of states in a direction
     config_dict={} #initialize particle states
     n_x=0
     n_y=0
