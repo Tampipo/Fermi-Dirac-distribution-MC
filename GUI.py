@@ -5,6 +5,7 @@ from labellines import labelLine, labelLines
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import os
 import threading
+import time
 from matplotlib import use as use_agg
 
 from datetime import datetime, timedelta
@@ -27,8 +28,8 @@ k=0
 config_dict={}
 init_param=[]
 
+plotting=False
 
-global date
 date=datetime.now()
 
 
@@ -53,9 +54,9 @@ def Simulation(window,n_step):
         x += [k]
         energie_moy += [e]
         #if (date-datetime.now()).total_seconds()>1:
-            #date=datetime.now()
-        
+         #   date=datetime.now()
         window.write_event_value('-THREAD-',  (threading.current_thread().name, i))
+        time.sleep(0.1)
         k+=1
 
 def pack_figure(graph, figure):
@@ -86,20 +87,23 @@ def plot_figure_second(index):
     ax.set_zlabel('Nz')
     ax.grid()
     ax.tick_params(axis='x', labelrotation = 20)
-    ax.tick_params(axis='x', labelrotation = 20)
     xu,yu,zu=[],[],[]
     xd,yd,zd=[],[],[]
+    print(config_dict)
     for cle, valeur in config_dict.items():
-        if valeur[3]==0.5:
+        if valeur[3]==1:
             xu.append(valeur[0])
             yu.append(valeur[1])
             zu.append(valeur[2])
-        if valeur[3]==-0.5:
+        if valeur[3]==-1:
             xd.append(valeur[0])
             yd.append(valeur[1])
             zd.append(valeur[2])
-    plt.scatter(xu,yu,zu, label='Up', color='b')   
-    plt.scatter(xd,yd,zd, label='Down', color='r')         
+    print(zu,zd)
+    ax.set_zlim3d(0,2)
+    plt.scatter(xu,yu,zu, label='Up', marker='o',color='b')   
+    plt.scatter(xd,yd,zd, label='Down', marker='^',color='r') 
+    plt.legend()        
     fig.canvas.draw()   
   
 
@@ -115,12 +119,13 @@ main_window = sg.Window("Fermi Dirac MC Simulation", layout, finalize=True)
 
 
 while True:
-    window, event, values = sg.read_all_windows()
+    window, event, values = sg.read_all_windows(timeout=1000)
     print(event)
     # End program if user closes window or
     # presses the OK button
     if event == "Exit" or event == sg.WIN_CLOSED or event == 'OK' or event=='-PARAM-':
         simulation=False
+        plotting=False
         if window==main_window:
             break
         else:
@@ -145,16 +150,16 @@ while True:
         #-----------------------------------------------------------------------
         #  Create graphs
         #-----------------------------------------------------------------------
-
+        plotting=True
         graph1 = simul_window['Graph1']
         plt.ioff()                          
-        fig1 = plt.figure(1,figsize=(6,4.5))
+        fig1 = plt.figure(1,figsize=(4,3))
         ax1 = plt.subplot(111) 
         pack_figure(graph1, fig1)   
         plot_figure_first(1)
         graph2 = simul_window['Graph2']                        
-        fig2 = plt.figure(2,figsize=(6,4.5))
-        ax2 = fig2.add_subplot(projection='3d') 
+        fig2 = plt.figure(2,figsize=(4,3))
+        ax2 = fig2.add_subplot(111, projection='3d') 
         pack_figure(graph2, fig2)   
         plot_figure_second(2)
         monitoring_thread = threading.Thread(target=Simulation, args=(window,n_steps), daemon=True)
@@ -163,8 +168,7 @@ while True:
         #except: 
             #popup_layout=[[sg.Text("Please enter suitable parameters!", text_color='red')],[sg.Button("OK")]]
            # popup_wind=sg.Window('Warning', popup_layout, finalize=True, element_justification='c')
-        
-        
-    if event == '-THREAD-':
-        plot_figure_first(1)
-        plot_figure_second(2)
+    if event == '-THREAD-' or event==sg.TIMEOUT_EVENT:
+        if plotting:
+            plot_figure_first(1)
+            plot_figure_second(2)

@@ -37,10 +37,10 @@ def init_states(N):
     n_x=0
     n_y=0
     n_z=0
-    s=-0.5
+    s=-1
     for i in range (0,N):
-        if s==-0.5:
-            s=0.5
+        if s==-1:
+            s=1
         elif n_x>n_y:
             n_y+=1
             s=-s
@@ -62,11 +62,9 @@ def choose_new_state(dict_config, position,n_cut):
         n_y =  random.randrange(0, n_cut+1)
         n_z =  random.randrange(0, n_cut+1)
         s   =  2*random.randrange(0, 2) - 1
-        print(s)
         test = 1
-        l = dict_config.keys()
-        for k in l:
-            if k[0] == n_x and k[1] == n_y and k[2] == n_z and k[3] == s:
+        for cle, valeur in dict_config.items():
+            if valeur[0] == n_x and valeur[1] == n_y and valeur[2] == n_z and valeur[3] == s:
                 test = 0
     return(position, np.array([n_x, n_y, n_z, s]))
 
