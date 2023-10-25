@@ -2,13 +2,15 @@ import random
 import numpy as np
 import math as mp
 import numpy as np
-
+import matplotlib.pyplot as plt
+import matplotlib.animation as anim
 
 ### Physics Constants ###
 
 hbar = 6.02*10**(-34) # J.s
 kb   = 1.38*10**(-23) # J.K^-1
 me   = 9.11*10**(-31) # kg
+
 
 def init(T,Lx,Ly,Lz): #initialize parameters
     Ex=(hbar*2*np.pi)**2/(2*me*Lx**2*kb*T) #dimensionless energy in x direction
@@ -65,7 +67,7 @@ def choose_new_state(dict_config, position,n_cut):
 
 def proba(old_state, new_state, Ex,Ey,Ez, config_dict): #new_state is a list of the incoming numbers
     old_numbers=config_dict[f'{old_state}']
-    proba=min(1,np.exp(-Ex(old_numbers[0]**2-new_state[0]**2)-Ey(old_numbers[1]**2-new_state[1]**2)-Ez(old_numbers[2]**2-new_state[2]**2)))
+    proba=min(1,np.exp(Ex*(old_numbers[0]**2-new_state[0]**2)+Ey*(old_numbers[1]**2-new_state[1]**2)+Ez*(old_numbers[2]**2-new_state[2]**2)))
     x=random.random()
     if x<proba:
         config_dict[f'{old_state}']=new_state
@@ -90,7 +92,7 @@ def main():
     print("Number of particles: ", N)
     print("Temperature: ", T, "(K)")
     print("Box dimensions: ", Lx, Ly, Lz, "(m)" )
-    print("States cut : ", n_cut)
+    print("States cuolt : ", n_cut)
 
 
 if __name__=="__main__":
