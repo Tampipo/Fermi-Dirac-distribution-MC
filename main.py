@@ -1,4 +1,4 @@
-
+import random
 import numpy as np
 import math as mp
 import numpy as np
@@ -8,14 +8,14 @@ import numpy as np
 
 hbar = 6.02*10**(-34) # J.s
 kb   = 1.38*10**(-23) # J.K^-1
-me   = float(9.11*10**(-31)) # kg
+me   = 9.11*10**(-31) # kg
 
 def init(T,Lx,Ly,Lz): #initialize parameters
     Ex=(hbar*2*np.pi)**2/(2*me*Lx**2*kb*T) #dimensionless energy in x direction
     Ey=(hbar*2*np.pi)**2/(2*me*Ly**2*kb*T) #y direction
     Ez=(hbar*2*np.pi)**2/(2*me*Lz**2*kb*T) #z direction
     E_0 = min(Ex, Ey, Ez) 
-    n_cut=int(-mp.log2(0.01)/E_0) #max number of states in a direction
+    n_cut=int(-mp.log2(0.1)/E_0) #max number of states in a direction
     return Ex,Ey,Ez,E_0,n_cut
     
 def create_liste(N):
@@ -42,9 +42,10 @@ def init_states():
         else :
             n_x+=1
             s=-s
-        config_dict[f'{i}']=[n_x,n_y,n_z,s] #state is given by n_x,n_y,n_z,s
+        config_dict[f'{i}']=np.array(n_x,n_y,n_z,s) #state is given by n_x,n_y,n_z,s
     return config_dict
-def choose_new_state(dict_config, position):
+
+def choose_new_state(dict_config, position,n_cut):
     """
 
     """
@@ -61,16 +62,20 @@ def choose_new_state(dict_config, position):
                 test = 0
     
     return(position, np.array([n_x, n_y, n_z, s]))
-    
+
 def proba(old_state, new_state, Ex,Ey,Ez, config_dict): #new_state is a list of the incoming numbers
     old_numbers=config_dict[f'{old_state}']
-    return min(1,np.exp(-Ex(old_numbers[0]**2-new_state[0]**2)-Ey(old_numbers[1]**2-new_state[1]**2)-Ez(old_numbers[2]**2-new_state[2]**2)))
+    proba=min(1,np.exp(-Ex(old_numbers[0]**2-new_state[0]**2)-Ey(old_numbers[1]**2-new_state[1]**2)-Ez(old_numbers[2]**2-new_state[2]**2)))
+    x=random.random()
+    if x<proba:
+        config_dict[f'{old_state}']=new_state
+
 
 def main():
     print(type(me))
     print("Please select your parameters")
-    N=input("Number of particles:")
-    T=input("Temperature (K):")
+    N=float(input("Number of particles:"))
+    T=float(input("Temperature (K):"))
     Lx=float(input("Box dimensions x (m):"))
     Ly=float(input("Box dimensions y (m):"))
     Lz=float(input("Box dimensions z (m):"))
