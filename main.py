@@ -24,7 +24,7 @@ def create_liste(N):
     random.shuffle(L)
     return(L)
     
-def init_states():
+def init_states(N):
     config_dict={} #initialize particle states
     n_x=0
     n_y=0
