@@ -31,7 +31,24 @@ def init_states():
             s=-s
         config_dict[f'{i}']=[n_x,n_y,n_z,s] #state is given by n_x,n_y,n_z,s
     return config_dict
-
+def choose_new_state(dict_config, position):
+    """
+    
+    """
+    test = 0 
+    # elec = dict_config[f'{position}'] 
+    while test == 0:
+        n_x =  random.randrange(0, n_cut+1)
+        n_y =  random.randrange(0, n_cut+1)
+        n_z =  random.randrange(0, n_cut+1)
+        s   =  random.randrange(0, 2) - 1/2
+        test = 1
+        for cle, valeur in dict_config.items():
+            if valeur[0] == n_x and valeur[1] == n_y and valeur[2] == n_z and valeur[3] == s:
+                test = 0
+    
+    return(position, np.array([n_x, n_y, n_z, s]))
+    
 def proba(old_state, new_state, Ex,Ey,Ez, config_dict): #new_state is a list of the incoming numbers
     old_numbers=config_dict[f'{old_state}']
     return min(1,np.exp(-Ex(old_numbers[0]**2-new_state[0]**2)-Ey(old_numbers[1]**2-new_state[1]**2)-Ez(old_numbers[2]**2-new_state[2]**2)))
