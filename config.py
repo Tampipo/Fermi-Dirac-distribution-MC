@@ -1,12 +1,5 @@
 import numpy as np
 
-### SIMULATION VARIABLES ###
-
-N  = 100 #number of particle
-T  = 10 #in Kelvin, temperature for the simulation
-Lx = 10**(-6) #in m dimension in direction x
-Ly = 10**(-6) #direction y
-Lz = 10**(-6) #direction z
 
 ### Physics Constants ###
 

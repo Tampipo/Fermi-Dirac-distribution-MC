@@ -1,7 +1,7 @@
 from config import *
 import numpy as np
 import math as mp
-print(N)
+
 
 def init(): #initialize parameters
     Ex=(hbar*2*np.pi)**2/(2*me*Lx**2*kb*T) #dimensionless energy in x direction
@@ -9,6 +9,9 @@ def init(): #initialize parameters
     Ez=(hbar*2*np.pi)**2/(2*me*Lz**2*kb*T) #z direction
     E_0 = min(Ex, Ey, Ez) 
     n_cut=-mp.log2(0.01)/E_0 #max number of states in a direction
+    return Ex,Ey,Ez,E_0,n_cut
+
+def init_states():
     config_dict={} #initialize particle states
     n_x=0
     n_y=0
@@ -29,9 +32,19 @@ def init(): #initialize parameters
         config_dict[f'{i}']=[n_x,n_y,n_z,s] #state is given by n_x,n_y,n_z,s
     return config_dict
 
+def proba(old_state, new_state, Ex,Ey,Ez, config_dict): #new_state is a list of the incoming numbers
+    old_numbers=config_dict[f'{old_state}']
+    return min(1,np.exp(-Ex(old_numbers[0]**2-new_state[0]**2)-Ey(old_numbers[1]**2-new_state[1]**2)-Ez(old_numbers[2]**2-new_state[2]**2)))
 
 def main():
-    print(init_states())
+    print("Please select your parameters")
+    N=input("Number of particles:")
+    T=input("Temperature (K):")
+    Lx=input("Box dimensions x (m):")
+    Ly=input("Box dimensions y (m):")
+    Lz=input("Box dimensions z (m):")
+    print("Initializing parameters...")
+    init_param=init()
 
 if __name__=="__main__":
     print(36*hbar**2,me*kb)
