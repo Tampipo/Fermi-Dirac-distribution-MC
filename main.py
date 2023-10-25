@@ -10,7 +10,13 @@ def init(): #initialize parameters
     E_0 = min(Ex, Ey, Ez) 
     n_cut=-mp.log2(0.01)/E_0 #max number of states in a direction
     return Ex,Ey,Ez,E_0,n_cut
-
+    
+def create_liste(N):
+    """Crée la nouvelle liste qui définis l'ordre de tirage des N états"""
+    L = np.linspace(0,N,N+1)
+    random.shuffle(L)
+    return(L)
+    
 def init_states():
     config_dict={} #initialize particle states
     n_x=0
