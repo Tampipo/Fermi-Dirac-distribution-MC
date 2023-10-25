@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from labellines import labelLine, labelLines
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import os
+import threading
+from matplotlib import use as use_agg
 
 from datetime import datetime, timedelta
 import matplotlib.pylab as pylab
@@ -38,6 +40,7 @@ def plot_figure_first(index):
     except: pass            
     fig.canvas.draw()   
 
+use_agg('TkAgg')
 
 dimframe=[ [sg.Text('Length x'), sg.Input(default_text='0.000001',key='-X-'), sg.Text("(m)")],[sg.Text('Length y'), sg.Input(default_text='0.000001',key='-Y-'), sg.Text("(m)")],[sg.Text('Length z'), sg.Input(default_text='0.000001',key='-Z-'), sg.Text("(m)")]]
 DimFrame=sg.Frame("Dimensions of the box", dimframe, title_color='red')
