@@ -37,10 +37,10 @@ def init_states(N):
     n_x=0
     n_y=0
     n_z=0
-    s=-1
+    s=-0.5
     for i in range (0,N):
-        if s==-1:
-            s=1
+        if s==-0.5:
+            s=0.5
         elif n_x>n_y:
             n_y+=1
             s=-s
@@ -74,7 +74,7 @@ def proba(old_state, new_state, Ex,Ey,Ez, config_dict): #new_state is a list of 
     proba=min(1,np.exp(Ex*(old_numbers[0]**2-new_state[0]**2)+Ey*(old_numbers[1]**2-new_state[1]**2)+Ez*(old_numbers[2]**2-new_state[2]**2)))
     x=random.random()
     #print(proba, 'proba')
-    print(old_numbers[0]**2-new_state[0]**2)
+    #print(old_numbers[0]**2-new_state[0]**2)
     if x<proba:
         config_dict[f'{old_state}']=new_state
 
@@ -112,12 +112,10 @@ def main():
     print("Box dimensions: ", Lx, Ly, Lz, "(m)" )
     print("States cut : ", n_cut)
     print("Energie along x",Ex)
-    
-    x = np.array([0])
-    energie_moy = np.array([])
-    
+
     config_dict = init_states(N)
-    
+    print(config_dict)
+
     e = 0
     for cle, valeur in config_dict.items():
         e += mp.sqrt(valeur[0]**2+valeur[1]**2+valeur[2]**2)/N
@@ -143,5 +141,4 @@ def main():
             
 
 if __name__=="__main__":
-    print(36*hbar**2,me*kb)
     main()
