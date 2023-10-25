@@ -33,7 +33,7 @@ def init_states():
     return config_dict
 def choose_new_state(dict_config, position):
     """
-    
+
     """
     test = 0 
     # elec = dict_config[f'{position}'] 
