@@ -18,12 +18,22 @@ hbar = 6.02*10**(-34) # J.s
 kb   = 1.38*10**(-23) # J.K^-1
 me   = 9.11*10**(-31) # kg
 
+
+
+def fermi_distrib(E,mu,T):
+    return 1/(1+np.exp((E-mu)/(kb*T)))
+
+def chemical_potential(T,Ef):
+    mu=Ef*(1-np.pi**2/12(kb*T/Ef)**2)
+    return mu
+
 def init(T,Lx,Ly,Lz,N): #initialize parameters
     Ex=(hbar*2*np.pi)**2/(2*me*Lx**2*kb*T) #dimensionless energy in x direction
     Ey=(hbar*2*np.pi)**2/(2*me*Ly**2*kb*T) #y direction
     Ez=(hbar*2*np.pi)**2/(2*me*Lz**2*kb*T) #z direction
     E_0 = min(Ex, Ey, Ez) 
-    n_cut=min(3*N,int(-mp.log2(0.2)/E_0)) #max number of states in a direction
+    n_cut=10
+    #n_cut=min(10*N,int(-mp.log2(0.00000005)/E_0)) #max number of states in a direction
     print(n_cut)
     return Ex,Ey,Ez,E_0,n_cut
     
@@ -71,7 +81,10 @@ def choose_new_state(dict_config, position,n_cut):
 
 def proba(old_state, new_state, Ex,Ey,Ez, config_dict): #new_state is a list of the incoming numbers
     old_numbers=config_dict[f'{old_state}']
-    proba=min(1,np.exp(Ex*(old_numbers[0]**2-new_state[0]**2)+Ey*(old_numbers[1]**2-new_state[1]**2)+Ez*(old_numbers[2]**2-new_state[2]**2)))
+    if Ex*(old_numbers[0]**2-new_state[0]**2)+Ey*(old_numbers[1]**2-new_state[1]**2)+Ez*(old_numbers[2]**2-new_state[2]**2)>0:
+        proba=1
+    else:
+        proba=np.exp(Ex*(old_numbers[0]**2-new_state[0]**2)+Ey*(old_numbers[1]**2-new_state[1]**2)+Ez*(old_numbers[2]**2-new_state[2]**2))
     x=random.random()
     #print(proba, 'proba')
     #print(old_numbers[0]**2-new_state[0]**2)
@@ -96,11 +109,11 @@ def main():
         n_step = int(input("Number of step :"))
     else:
         N = 10
-        T = 1
-        Lx = 10**(-6)
-        Ly = 10**(-6)
-        Lz = 10**(-6)
-        n_step = 1000
+        T = 0.001
+        Lx = 10**(-9)
+        Ly = 10**(-9)
+        Lz = 10**(-9)
+        n_step = 10000
  
     print("Initializing parameters...")
     print(Lx)
@@ -117,7 +130,7 @@ def main():
     print("Energie along x",Ex)
 
     config_dict = init_states(N)
-    print(config_dict)
+    #print(config_dict)
 
     e = 0
     for cle, valeur in config_dict.items():
@@ -125,13 +138,14 @@ def main():
     x = [0]
     energie_moy = [e]
     
+    Fermi_Dirac=[[[0,0,0,-1],0]]
     for k in range(n_step):
         liste = create_liste(N)
         for l in liste:
             old_state = l
             new_state = choose_new_state(config_dict, l, n_cut)[1]
             proba(old_state, new_state, Ex, Ey, Ez, config_dict)
-            
+        E=[]
         e = 0
         for i in range (0,N):
             E.append(get_energy(i, config_dict,Ex,Ey,Ez))
@@ -140,10 +154,38 @@ def main():
         e= np.mean(E)
         x += [k+1]
         energie_moy += [e]
-        plt.plot(x, energie_moy)
-        plt.show()
-            
-            
+        part=[]
+        for cle,valeur in config_dict.items():
+            part.append(list(valeur))
+        for i in range(0,len(Fermi_Dirac)):
+            n=0
+            for j in range (0,len(part)):
+                if Fermi_Dirac[i][0]==part[j]:
+                    n+=1
+            Fermi_Dirac[i][1]=k/(k+1)*Fermi_Dirac[i][1]+n/(k+1)
+
+        
+        #print(part)
+        treated_states=[]
+
+        for j in range (0,len(part)):
+            if part[j] not in treated_states:
+                n=0
+                for s in range (0,len(part)):
+                    if part[s]==part[j]:
+                        n+=1
+                Fermi_Dirac.append([part[j],n/(k+1)])
+                treated_states.append(part[j])
+        #plt.plot(x, energie_moy)
+        #plt.show()
+
+    Fermi_Dirac_energies=[]
+    Fermi_Dirac_part=[]
+    for i in range (0,len(Fermi_Dirac)):
+        Fermi_Dirac_energies.append(Ex*Fermi_Dirac[i][0][0]**2+Ey*Fermi_Dirac[i][0][1]**2+Ez*Fermi_Dirac[i][0][2]**2)
+        Fermi_Dirac_part.append(Fermi_Dirac[i][1])
+    plt.scatter(Fermi_Dirac_energies,Fermi_Dirac_part)
+    plt.show()
 
 if __name__=="__main__":
     main()
