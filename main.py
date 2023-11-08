@@ -33,7 +33,7 @@ def create_liste(N):
     random.shuffle(L)
     return(L)
     
-def init_states2(N):
+def init_states(N):
     config_dict={}
     
     L = []
