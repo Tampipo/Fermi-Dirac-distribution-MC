@@ -23,7 +23,8 @@ def init(T,Lx,Ly,Lz,N): #initialize parameters
     Ey=(hbar*2*np.pi)**2/(2*me*Ly**2*kb*T) #y direction
     Ez=(hbar*2*np.pi)**2/(2*me*Lz**2*kb*T) #z direction
     E_0 = min(Ex, Ey, Ez) 
-    n_cut=min(10*N,int(-mp.log2(0.1)/E_0)) #max number of states in a direction
+    n_cut=min(3*N,int(-mp.log2(0.2)/E_0)) #max number of states in a direction
+    print(n_cut)
     return Ex,Ey,Ez,E_0,n_cut
     
 def create_liste(N):
@@ -77,6 +78,9 @@ def proba(old_state, new_state, Ex,Ey,Ez, config_dict): #new_state is a list of 
     if x<proba:
         config_dict[f'{old_state}']=new_state
 
+def get_energy(particle, config_dict,Ex,Ey,Ez):
+    return Ex*config_dict[f'{particle}'][0]**2+Ey*config_dict[f'{particle}'][1]**2+Ez*config_dict[f'{particle}'][2]**2
+
 
 def main():
     
@@ -129,9 +133,11 @@ def main():
             proba(old_state, new_state, Ex, Ey, Ez, config_dict)
             
         e = 0
-        for cle, valeur in config_dict.items():
-            e += mp.sqrt(valeur[0]**2+valeur[1]**2+valeur[2]**2)/N
-        
+        for i in range (0,N):
+            E.append(get_energy(i, config_dict,Ex,Ey,Ez))
+        x += [k]
+        E=np.array(E)
+        e= np.mean(E)
         x += [k+1]
         energie_moy += [e]
         plt.plot(x, energie_moy)
