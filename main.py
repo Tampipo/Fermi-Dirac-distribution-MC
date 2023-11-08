@@ -44,25 +44,44 @@ def create_liste(N):
     return(L)
     
 def init_states(N):
-    config_dict={} #initialize particle states
-    n_x=0
-    n_y=0
-    n_z=0
-    s=-1
-    for i in range (0,N):
-        if s==-1:
-            s=1
-        elif n_x>n_y:
-            n_y+=1
-            s=-s
-        elif n_y>n_z:
-            n_z+=1
-            s=-s
-        else :
-            n_x+=1
-            s=-s
-        config_dict[f'{i}']=np.array([n_x,n_y,n_z,s]) #state is given by n_x,n_y,n_z,s
-    return config_dict
+    config_dict={}
+    
+    L = []
+    c = 0
+    for k in range(N):
+        for j in range(N):
+            for i in range(N):
+                c += 1
+                e  = Ex*k**2 + Ey*j**2 + Ez*i**2
+                L+=[[e,k,j,i]]
+                
+    L1 = sorted(L, key=lambda x: x[0])
+  
+    if N%2 == 0:
+        c = 0
+        l = 0
+        for k in range(N//2): 
+            config_dict[f'{c}'] = np.array([L1[l][1],L1[l][2],L1[l][3],-1])
+            c+=1
+            config_dict[f'{c}'] = np.array([L1[l][1],L1[l][2],L1[l][3], 1])
+            c+=1 
+            l+=1
+        return(config_dict)
+            
+    if N%2 == 1:
+        c = 0
+        l = 0
+        for k in range(N//2): 
+            config_dict[f'{c}'] = np.array([L1[l][1],L1[l][2],L1[l][3],-1])
+            c+=1
+            config_dict[f'{c}'] = np.array([L1[l][1],L1[l][2],L1[l][3], 1])
+            c+=1 
+            l+=1
+        config_dict[f'{c}'] = np.array([L1[l][1],L1[l][2],L1[l][3],-1])
+        return(config_dict)
+    
+          
+print(init_states2(10))
 
 def choose_new_state(dict_config, position,n_cut):
 
