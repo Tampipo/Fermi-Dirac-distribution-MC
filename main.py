@@ -27,15 +27,11 @@ def chemical_potential(T,Ef):
     mu=Ef*(1-np.pi**2/12*(kb*T/Ef)**2)
     return mu
 
-def init(T,Lx,Ly,Lz,N): #initialize parameters
+def init(T,Lx,Ly,Lz): #initialize parameters
     Ex=(hbar*2*np.pi)**2/(2*me*Lx**2*kb*T) #dimensionless energy in x direction
     Ey=(hbar*2*np.pi)**2/(2*me*Ly**2*kb*T) #y direction
     Ez=(hbar*2*np.pi)**2/(2*me*Lz**2*kb*T) #z direction
-    E_0 = min(Ex, Ey, Ez) 
-    n_cut=10
-    #n_cut=min(10*N,int(-mp.log2(0.00000005)/E_0)) #max number of states in a direction
-    print(n_cut)
-    return Ex,Ey,Ez,E_0,n_cut
+    return Ex,Ey,Ez
     
 def create_liste(N):
     """Crée la nouvelle liste qui définis l'ordre de tirage des N états"""
@@ -79,8 +75,16 @@ def init_states(N,Ex,Ey,Ez):
             l+=1
         config_dict[f'{c}'] = np.array([L1[l][1],L1[l][2],L1[l][3],-1])
         return(config_dict)
+
+
+def Ncut(T, Ex, Ey, Ez, Ef):
+    ET = mp.sqrt((2*mp.pi*hbar)/(me*kb*T))
+    nx = int(mp.sqrt((ET + Ef)/Ex))
+    ny = int(mp.sqrt((ET + Ef)/Ey))
+    nz = int(mp.sqrt((ET + Ef)/Ez))
     
-          
+    return nx, ny, nz
+    
 #print(init_states2(10))
 
 def choose_new_state(dict_config, position,n_cut):
