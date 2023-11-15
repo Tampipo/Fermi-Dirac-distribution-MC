@@ -78,7 +78,7 @@ def init_states(N,Ex,Ey,Ez):
 
 
 def Ncut(T, Ex, Ey, Ez, Ef):
-    ET = mp.sqrt((2*mp.pi*hbar)/(me*kb*T))
+    ET = mp.sqrt((2*mp.pi*hbar**2)/(me*kb*T))
     nx = int(mp.sqrt((ET + Ef)/Ex))
     ny = int(mp.sqrt((ET + Ef)/Ey))
     nz = int(mp.sqrt((ET + Ef)/Ez))
