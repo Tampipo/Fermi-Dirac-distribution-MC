@@ -128,7 +128,7 @@ def main():
         n_step = int(input("Number of step :"))
     else:
         N = 50
-        T = 1000000
+        T = 10000
         Lx = 10**(-9)
         Ly = 10**(-9)
         Lz = 10**(-9)
@@ -149,6 +149,11 @@ def main():
     print("Energie along x",Ex)
 
     config_dict = init_states(N,Ex,Ey,Ez)
+    Ef=get_energy(N-1, config_dict, Ex,Ey, Ez)
+    mu=chemical_potential(T,Ef)
+    energies_plot=[k*Ex for k in range (0,25)]
+    fermi_dirac=[fermi_distrib(E, mu, T) for E in energies_plot]
+    print(mu, T)
     #print(config_dict)
 
     e = 0
@@ -218,11 +223,11 @@ def main():
         Fermi_Dirac_part_mean.append(np.mean(array))
         Fermi_Dirac_part_std.append(np.std(array))
     print(len(Fermi_Dirac_part_mean), len(list(distinct_energies)))
-    plt.scatter(list(distinct_energies),Fermi_Dirac_part_mean, color='blue', label='mean')
-    plt.scatter(list(distinct_energies),Fermi_Dirac_part_std, color='red', label='std')
-    plt.plot()
+    plt.scatter(list(distinct_energies),2*np.array(Fermi_Dirac_part_mean), color='blue', label='mean')
+    plt.plot(energies_plot, fermi_dirac, label="Fermi-Dirac")
     plt.xlim(0,2*max(Fermi_Dirac_energies))
-    plt.ylim(0,max(Fermi_Dirac_part_mean)+0.1*max(Fermi_Dirac_part_mean))
+    plt.axvline(x = 7, label = 'Fermi Energy',linestyle='--')
+    plt.ylim(0,2*max(Fermi_Dirac_part_mean)+0.2*max(Fermi_Dirac_part_mean))
     plt.legend()
     plt.show()
 
