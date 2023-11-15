@@ -77,13 +77,14 @@ def init_states(N,Ex,Ey,Ez):
         return(config_dict)
 
 
-def Ncut(T, Ex, Ey, Ez, Ef):
-    ET = mp.sqrt((2*mp.pi*hbar**2)/(me*kb*T))
-    nx = int(mp.sqrt((ET + Ef)/Ex))
-    ny = int(mp.sqrt((ET + Ef)/Ey))
-    nz = int(mp.sqrt((ET + Ef)/Ez))
+def Ncut(T, Lx, Ly, Lz):
+    ET = mp.sqrt((2*mp.pi*hbar)/(me*kb*T))
+    nx = int(mp.sqrt((ET + Ef)/(hbar*2*np.pi)**2*(2*me*Lx**2)))
+    ny = int(mp.sqrt((ET + Ef)/(hbar*2*np.pi)**2*(2*me*Ly**2)))
+    nz = int(mp.sqrt((ET + Ef)/(hbar*2*np.pi)**2*(2*me*Lz**2)))
     
     return nx, ny, nz
+    
     
 #print(init_states2(10))
 
