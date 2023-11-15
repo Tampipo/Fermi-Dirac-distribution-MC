@@ -132,7 +132,7 @@ def main():
         n_step = int(input("Number of step :"))
     else:
         N = 50
-        T = 10000
+        T = 1000000
         Lx = 10**(-9)
         Ly = 10**(-9)
         Lz = 10**(-9)
@@ -140,11 +140,18 @@ def main():
  
     print("Initializing parameters...")
     print(Lx)
-    init_param=init(T,Lx,Ly,Lz,N)
-    n_cut=init_param[-1]
+    init_param=init(T,Lx,Ly,Lz)
     Ex=init_param[0]
     Ey=init_param[1]
     Ez=init_param[2]
+    config_dict = init_states(N,Ex,Ey,Ez)
+    Ef=get_energy(N-1, config_dict, Ex,Ey, Ez)
+    mu=chemical_potential(T,Ef)
+    energies_plot=[k*Ex for k in range (0,25)]
+    fermi_dirac=[fermi_distrib(E, mu, T) for E in energies_plot]
+    print(mu, T)
+    n_cut=min(Ncut(T,Lx,Ly,Lz,Ef))
+
     print("**********Simulation parameters*********")
     print("Number of particles: ", N)
     print("Temperature: ", T, "(K)")
@@ -152,12 +159,7 @@ def main():
     print("States cut : ", n_cut)
     print("Energie along x",Ex)
 
-    config_dict = init_states(N,Ex,Ey,Ez)
-    Ef=get_energy(N-1, config_dict, Ex,Ey, Ez)
-    mu=chemical_potential(T,Ef)
-    energies_plot=[k*Ex for k in range (0,25)]
-    fermi_dirac=[fermi_distrib(E, mu, T) for E in energies_plot]
-    print(mu, T)
+    
     #print(config_dict)
 
     e = 0
@@ -230,7 +232,7 @@ def main():
     plt.scatter(list(distinct_energies),2*np.array(Fermi_Dirac_part_mean), color='blue', label='mean')
     plt.plot(energies_plot, fermi_dirac, label="Fermi-Dirac")
     plt.xlim(0,2*max(Fermi_Dirac_energies))
-    plt.axvline(x = 7, label = 'Fermi Energy',linestyle='--')
+    plt.axvline(x = Ef, label = 'Fermi Energy',linestyle='--')
     plt.ylim(0,2*max(Fermi_Dirac_part_mean)+0.2*max(Fermi_Dirac_part_mean))
     plt.legend()
     plt.show()
