@@ -81,9 +81,9 @@ def init_states(N):
 
 def Ncut(T,Ef,Lx,Ly,Lz):
     ET = 1/2*kb*T
-    nx = int(mp.sqrt((ET + Ef)/(hbar*2*np.pi)**2*(2*me*Lx**2)))
-    ny = int(mp.sqrt((ET + Ef)/(hbar*2*np.pi)**2*(2*me*Ly**2)))
-    nz = int(mp.sqrt((ET + Ef)/(hbar*2*np.pi)**2*(2*me*Lz**2)))
+    nx = int(mp.sqrt((ET + Ef*kb*T)/(hbar*2*np.pi)**2*(2*me*Lx**2)))
+    ny = int(mp.sqrt((ET + Ef*kb*T)/(hbar*2*np.pi)**2*(2*me*Ly**2)))
+    nz = int(mp.sqrt((ET + Ef*kb*T)/(hbar*2*np.pi)**2*(2*me*Lz**2)))
     
     return nx, ny, nz
     
