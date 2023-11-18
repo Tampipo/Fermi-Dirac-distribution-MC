@@ -94,9 +94,9 @@ def choose_new_state(dict_config, position,n_cut):
     test = 0 
     # elec = dict_config[f'{position}'] 
     while test == 0:
-        n_x =  random.randrange(0, n_cut+1)
-        n_y =  random.randrange(0, n_cut+1)
-        n_z =  random.randrange(0, n_cut+1)
+        n_x =  random.randrange(-n_cut, n_cut+1)
+        n_y =  random.randrange(-n_cut, n_cut+1)
+        n_z =  random.randrange(-n_cut, n_cut+1)
         s   =  2*random.randrange(0, 2) - 1
         test = 1
         for cle, valeur in dict_config.items():
