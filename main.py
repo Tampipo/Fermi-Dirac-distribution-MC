@@ -39,14 +39,16 @@ def create_liste(N):
     random.shuffle(L)
     return(L)
     
-def init_states(N,Ex,Ey,Ez):
+def init_states(N):
     config_dict={}
+    dict_init={} 
     
     L = []
     c = 0
-    for k in range(N):
-        for j in range(N):
-            for i in range(N):
+    n = N//2 + 1
+    for k in range(-n,n):
+        for j in range(-n,n):
+            for i in range(-n,n):
                 c += 1
                 e  = Ex*k**2 + Ey*j**2 + Ez*i**2
                 L+=[[e,k,j,i]]
