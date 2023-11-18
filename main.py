@@ -140,7 +140,7 @@ def main():
  
     print("Initializing parameters...")
     print(Lx)
-    init_param=init(T,Lx,Ly,Lz)
+    init_param=init(T,,Ef,Lx,Ly,Lz)
     Ex=init_param[0]
     Ey=init_param[1]
     Ez=init_param[2]
