@@ -4,7 +4,8 @@ import math as mp
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
-
+from scipy.spatial import ConvexHull
+from mpl_toolkits.mplot3d import Axes3D
 ### Physics Constants ###
 
 import numpy as np
@@ -39,7 +40,7 @@ def create_liste(N):
     random.shuffle(L)
     return(L)
     
-def init_states(N):
+def init_states(N,Ex,Ey,Ez):
     config_dict={}
     dict_init={} 
     
@@ -133,7 +134,7 @@ def main():
         Lz=float(input("Box dimensions z (m):"))
         n_step = int(input("Number of step :"))
     else:
-        N = 50
+        N = 100
         T = 0.1
         Lx = 10**(-6)
         Ly = 10**(-6)
@@ -152,8 +153,8 @@ def main():
     energies_plot=np.linspace(0,100*Ex,1000)
     fermi_dirac=[fermi_distrib(E, Ef, T) for E in energies_plot]
     #print(mu, T)
-    #n_cut=min(Ncut(T,Ef,Lx,Ly,Lz))
-    n_cut=30
+    n_cut=min(Ncut(T,Ef,Lx,Ly,Lz))
+    #n_cut=30
     print("**********Simulation parameters*********")
     print("Number of particles: ", N)
     print("Temperature: ", T, "(K)")
@@ -261,10 +262,14 @@ def main():
             ax.set_xlabel("Nx")
             ax.set_ylabel("Ny")
             ax.set_zlabel("Nz")
-            ax.set_ylim(,4)
+            ax.set_xlim(-3,3)
+            ax.set_ylim(-3,3)
+            ax.set_zlim(-3,3)   
             #ax.tick_params(axis='x', labelrotation = 20)
             xu,yu,zu=[],[],[]
             xd,yd,zd=[],[],[]
+            pts_u=[]
+            pts_d=[]
             #print(config_dict)
             for i in range (0, len(config_dict)):
                 valeur=config_dict[f'{i}']
@@ -272,13 +277,21 @@ def main():
                     xu.append(valeur[0])
                     yu.append(valeur[1])
                     zu.append(valeur[2])
+                    pts_u.append([valeur[0],valeur[1],valeur[2]])
                 if valeur[3]==-1:
                     xd.append(valeur[0])
                     yd.append(valeur[1])
                     zd.append(valeur[2])
-            print(zu)
-            ax.scatter(xu,yu,zu, label='Up', marker='o',color='b')   
-            ax.scatter(xd,yd,zd, label='Down', marker='^',color='r') 
+                    pts_d.append([valeur[0],valeur[1],valeur[2]])
+            array_up=np.array(pts_u)
+            array_down=np.array(pts_d)
+            hull=ConvexHull(array_up)
+            ax.plot(array_up.T[0], array_up.T[1], array_up.T[2], "o", color="blue", label="Particles")
+            for s in hull.simplices:
+                s = np.append(s, s[0])  # Here we cycle back to the first coordinate
+                ax.plot(array_up[s, 0], array_up[s, 1], array_up[s, 2], "r-")
+            #ax.scatter(xu,yu,zu, label='Up', marker='o',color='b')   
+            #ax.scatter(xd,yd,zd, label='Down', marker='^',color='r') 
             plt.legend()        
             plt.savefig(f'./img/{k}_momentum_space')
 
