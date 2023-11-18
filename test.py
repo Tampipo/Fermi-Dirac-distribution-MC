@@ -1,32 +1,28 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from labellines import labelLine, labelLines
 
-# Fixing random state for reproducibility
-np.random.seed(19680801)
+temp=[0.01,0.05,0.1,0.5,1,10,100,1000,10000]
 
 
-def randrange(n, vmin, vmax):
-    """
-    Helper function to make an array of random numbers having shape (n, )
-    with each number distributed Uniform(vmin, vmax).
-    """
-    return (vmax - vmin)*np.random.rand(n) + vmin
+kb   = 1.38*10**(-23) # J.K^-1
 
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
+def fermi_distrib(E,mu,T):
+    return 1/(1+np.exp((E-mu)/(kb*T)))
 
-n = 100
+def chemical_potential(T,Ef):
+    mu=Ef*(1-np.pi**2/12*(kb*T/Ef)**2)
+    return mu
 
-# For each set of style and range settings, plot n random points in the box
-# defined by x in [23, 32], y in [0, 100], z in [zlow, zhigh].
-for m, zlow, zhigh in [('o', -50, -25), ('^', -30, -5)]:
-    xs = randrange(n, 23, 32)
-    ys = randrange(n, 0, 100)
-    zs = 
-    ax.scatter(xs, ys, zs, marker=m)
+Ef=3*10**(-18)
 
-ax.set_xlabel('X Label')
-ax.set_ylabel('Y Label')
-ax.set_zlabel('Z Label')
+for i in range(0,len(temp)):
+    T=temp[i]
+    chem=chemical_potential(T,Ef)
+    print(chem)
+    energies=[0.01*Ef*k for k in range(0,200)]
+    fermi_dirac=[fermi_distrib(E, chem, T) for E in energies]
+    plt.plot(energies, fermi_dirac)
 
+plt.legend()
 plt.show()

@@ -21,10 +21,10 @@ me   = 9.11*10**(-31) # kg
 
 
 def fermi_distrib(E,mu,T):
-    return 1/(1+np.exp((E-mu)/(kb*T)))
+    return 1/(1+np.exp(E-mu))
 
 def chemical_potential(T,Ef):
-    mu=Ef*(1-np.pi**2/12*(kb*T/Ef)**2)
+    mu=Ef*(1-np.pi**2/12*(1/Ef)**2)
     return mu
 
 def init(T,Lx,Ly,Lz): #initialize parameters
@@ -115,7 +115,7 @@ def proba(old_state, new_state, Ex,Ey,Ez, config_dict): #new_state is a list of 
         config_dict[f'{old_state}']=new_state
 
 def get_energy(particle, config_dict,Ex,Ey,Ez):
-    return Ex*config_dict[f'{particle}'][0]**2+Ey*config_dict[f'{particle}'][1]**2+Ez*config_dict[f'{particle}'][2]**2
+    return np.round(Ex*config_dict[f'{particle}'][0]**2+Ey*config_dict[f'{particle}'][1]**2+Ez*config_dict[f'{particle}'][2]**2,5)
 
 
 def main():
@@ -132,32 +132,33 @@ def main():
         n_step = int(input("Number of step :"))
     else:
         N = 50
-        T = 1000000
-        Lx = 10**(-9)
-        Ly = 10**(-9)
-        Lz = 10**(-9)
-        n_step = 1000
+        T = 0.1
+        Lx = 10**(-6)
+        Ly = 10**(-6)
+        Lz = 10**(-6)
+        n_step = 10000
  
     print("Initializing parameters...")
     print(Lx)
-    init_param=init(T,,Ef,Lx,Ly,Lz)
+    init_param=init(T,Lx,Ly,Lz)
     Ex=init_param[0]
     Ey=init_param[1]
     Ez=init_param[2]
     config_dict = init_states(N,Ex,Ey,Ez)
     Ef=get_energy(N-1, config_dict, Ex,Ey, Ez)
     mu=chemical_potential(T,Ef)
-    energies_plot=[k*Ex for k in range (0,25)]
-    fermi_dirac=[fermi_distrib(E, mu, T) for E in energies_plot]
-    print(mu, T)
-    n_cut=min(Ncut(T,Lx,Ly,Lz,Ef))
-
+    energies_plot=np.linspace(0,100*Ex,1000)
+    fermi_dirac=[fermi_distrib(E, Ef, T) for E in energies_plot]
+    #print(mu, T)
+    #n_cut=min(Ncut(T,Ef,Lx,Ly,Lz))
+    n_cut=30
     print("**********Simulation parameters*********")
     print("Number of particles: ", N)
     print("Temperature: ", T, "(K)")
     print("Box dimensions: ", Lx, Ly, Lz, "(m)" )
     print("States cut : ", n_cut)
     print("Energie along x",Ex)
+    print("Fermi energy",Ef)
 
     
     #print(config_dict)
@@ -187,13 +188,20 @@ def main():
         part=[]
         for cle,valeur in config_dict.items():
             part.append(list(valeur))
+        #print(len(part))
+
         for i in range(0,len(Fermi_Dirac)):
             n=0
+            states_exists=False
+            index=0
             for j in range (0,len(part)):
                 if Fermi_Dirac[i][0]==part[j]:
-                    n+=1
-            Fermi_Dirac[i][1]=k/(k+1)*Fermi_Dirac[i][1]+n/(k+1)
-        
+                    index=j
+                    states_exists=True
+            if states_exists:
+                Fermi_Dirac[i][1]=k/(k+1)*Fermi_Dirac[i][1]+1/(k+1)
+                part.pop(index)
+        # print(len(Fermi_Dirac))
         
         #print(part)
         treated_states=[]
@@ -208,34 +216,72 @@ def main():
                 treated_states.append(part[j])
         #plt.plot(x, energie_moy)
         #plt.show()
-        if k%100==0:
+        if k%(n_step/10)==0:
             print(f'Step {k}')
+            fig1 = plt.figure()
+            ax1 = fig1.add_subplot()     
+            Fermi_Dirac_energies=[]
+            Fermi_Dirac_part=[]
+            Fermi_Dirac_part_mean=[]
+            Fermi_Dirac_part_std=[]
+            for i in range (0,len(Fermi_Dirac)):
+                Fermi_Dirac_energies.append(np.round(Ex*Fermi_Dirac[i][0][0]**2+Ey*Fermi_Dirac[i][0][1]**2+Ez*Fermi_Dirac[i][0][2]**2,5))
+                Fermi_Dirac_part.append(Fermi_Dirac[i][1])
+            distinct_energies=set(Fermi_Dirac_energies)
+            #print(distinct_energies)
+            for energy in distinct_energies:
+                correct_energies_part=[]
+                for i in range (0,len(Fermi_Dirac_energies) ):
+                    if Fermi_Dirac_energies[i]==energy:
+                        correct_energies_part.append(Fermi_Dirac_part[i])
+                array=np.array(correct_energies_part)
+                Fermi_Dirac_part_mean.append(np.mean(array))
+                Fermi_Dirac_part_std.append(np.std(array))
+            print(len(Fermi_Dirac_part_mean), len(list(distinct_energies)))
+            ax1.scatter(list(distinct_energies),np.array(Fermi_Dirac_part_mean), color='blue', label='mean')
+            ax1.plot(energies_plot, fermi_dirac, label="Fermi-Dirac", color="red")
+            ax1.set_xlim(0,3*Ef)
+            ax1.axvline(x = Ef, label = 'Fermi Energy',linestyle='--')
+            ax1.set_ylim(0,max(Fermi_Dirac_part_mean)+0.1*max(Fermi_Dirac_part_mean))
+            ax1.set_ylabel("Occupation number")
+            ax1.set_xlabel("Energy (dimensionless)")
+            ax1.set_title("Fermi_Dirac distribution")
+            ax1.legend()
+
+            plt.savefig(f'./img/{k}_fermi_dirac')
+
+
+            ax=plt.gca()
+            ax.cla()
+            fig = plt.figure()
+            ax = fig.add_subplot(projection='3d')     
+            ax.set_title("Momentum space")
+            ax.set_xlabel("Nx")
+            ax.set_ylabel("Ny")
+            ax.set_zlabel("Nz")
+            ax.set_ylim(,4)
+            #ax.tick_params(axis='x', labelrotation = 20)
+            xu,yu,zu=[],[],[]
+            xd,yd,zd=[],[],[]
+            #print(config_dict)
+            for i in range (0, len(config_dict)):
+                valeur=config_dict[f'{i}']
+                if valeur[3]==1:
+                    xu.append(valeur[0])
+                    yu.append(valeur[1])
+                    zu.append(valeur[2])
+                if valeur[3]==-1:
+                    xd.append(valeur[0])
+                    yd.append(valeur[1])
+                    zd.append(valeur[2])
+            print(zu)
+            ax.scatter(xu,yu,zu, label='Up', marker='o',color='b')   
+            ax.scatter(xd,yd,zd, label='Down', marker='^',color='r') 
+            plt.legend()        
+            plt.savefig(f'./img/{k}_momentum_space')
+
     
 
-    Fermi_Dirac_energies=[]
-    Fermi_Dirac_part=[]
-    Fermi_Dirac_part_mean=[]
-    Fermi_Dirac_part_std=[]
-    for i in range (0,len(Fermi_Dirac)):
-        Fermi_Dirac_energies.append(Ex*Fermi_Dirac[i][0][0]**2+Ey*Fermi_Dirac[i][0][1]**2+Ez*Fermi_Dirac[i][0][2]**2)
-        Fermi_Dirac_part.append(Fermi_Dirac[i][1])
-    distinct_energies=set(Fermi_Dirac_energies)
-    for energy in distinct_energies:
-        correct_energies_part=[]
-        for i in range (0,len(Fermi_Dirac_energies) ):
-            if Fermi_Dirac_energies[i]==energy:
-                correct_energies_part.append(Fermi_Dirac_part[i])
-        array=np.array(correct_energies_part)
-        Fermi_Dirac_part_mean.append(np.mean(array))
-        Fermi_Dirac_part_std.append(np.std(array))
-    print(len(Fermi_Dirac_part_mean), len(list(distinct_energies)))
-    plt.scatter(list(distinct_energies),2*np.array(Fermi_Dirac_part_mean), color='blue', label='mean')
-    plt.plot(energies_plot, fermi_dirac, label="Fermi-Dirac")
-    plt.xlim(0,2*max(Fermi_Dirac_energies))
-    plt.axvline(x = Ef, label = 'Fermi Energy',linestyle='--')
-    plt.ylim(0,2*max(Fermi_Dirac_part_mean)+0.2*max(Fermi_Dirac_part_mean))
-    plt.legend()
-    plt.show()
 
 if __name__=="__main__":
     main()
