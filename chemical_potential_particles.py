@@ -8,8 +8,8 @@ def fit_fermi_dirac(x,a):
 
 def fermi_dirac_temp(E,mu,T):
     return 1/(1+np.exp((E-mu)/(kb*T)))
-Npart=[20,50,70,100,150,200]
-colors=["r", "b", "g", "m","c", "y"]
+Npart=[10,20,50,70,100,150,200]
+colors=["r", "b", "g", "m","c", "y", "C1", "C6", "C7", "C4", "C2"]
 
 
 def main():

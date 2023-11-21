@@ -7,8 +7,8 @@ def fit_fermi_dirac(x,a):
 
 def fermi_dirac_temp(E,mu,T):
     return 1/(1+np.exp((E-mu)/(kb*T)))
-temp=[2500,5000,7500,10000,12500,15000]
-colors=["r", "b", "g", "m","c", "y"]
+temp=[1000,2000,3000,4000, 5000,10000,20000,30000,40000, 50000, 60000]
+colors=["r", "b", "g", "m","c", "y", "C1", "C6", "C7", "C4", "C2"]
 
 
 def main():
@@ -17,10 +17,11 @@ def main():
     Lx = 10**(-8)
     Ly = 10**(-8)
     Lz = 10**(-8)
-    n_step = 1000
+    n_step = 100000
     fig1 = plt.figure()
     ax1 = fig1.add_subplot()  
     chemical_potentials=[]
+    norm_temp=[]
     for T in temp:
         print("Initializing parameters...")
         init_param=init(T,Lx,Ly,Lz)
@@ -117,7 +118,7 @@ def main():
         data=kb*T*xdata
         ax1.plot(data, fermi_dirac_temp((data), popt[0]*kb*T, T),label=f'{T} K',color=colors[c])
         chemical_potentials.append(popt[0]/Ef)
-        norm_temp=[1/Ef]
+        norm_temp.append(1/Ef)
         ax1.scatter(np.array(list(distinct_energies))*kb*T,np.array(Fermi_Dirac_part_mean), color=colors[c])
         c+=1
 
@@ -134,10 +135,17 @@ def main():
 
     fig2 = plt.figure()
     ax2 = fig2.add_subplot()
-    ax2.scatter(norm_temp,chemical_potentials)
+    ax2.scatter(norm_temp,chemical_potentials, label="Simulation")
     ax2.set_ylabel(r"$\mu/E_{f}$")
+    low_temp=np.linspace(0,1, 2000)
+    low_chem=[chemical_potential_low(T) for T in low_temp]
+    ax2.plot(low_temp, low_chem, label=r"Low $T$, $\mu$", color='c', linestyle='--')
+    high_temp=np.linspace(0.5,2, 2000)
+    high_chem=[chemical_potential_high(T) for T in high_temp]
+    ax2.plot(high_temp, high_chem, label=r"High $T$, $\mu$", color='r', linestyle='--')
     ax2.set_xlabel(r"$T/T_{f}$")
     ax2.set_title("Chemical potential")
+    plt.legend()
     plt.savefig(f'./img_simu/chem_potential_all_temps')
 
 

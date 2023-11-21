@@ -18,8 +18,12 @@ me   = 9.11*10**(-31) # kg
 def fermi_distrib(E,mu):
     return 1/(1+np.exp(E-mu))
 
-def chemical_potential(T,Ef):
-    mu=Ef*(1-np.pi**2/12*(1/Ef)**2)
+def chemical_potential_low(Tnorm):
+    mu=(1-np.pi**2/12*(Tnorm)**2)
+    return mu
+
+def chemical_potential_high(Tnorm):
+    mu=3/2*Tnorm*np.log(4*np.pi/(6*np.pi**2)**(2/3)*(1/Tnorm))
     return mu
 
 def init(T,Lx,Ly,Lz): #initialize parameters
