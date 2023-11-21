@@ -17,7 +17,7 @@ def main():
     Lx = 10**(-8)
     Ly = 10**(-8)
     Lz = 10**(-8)
-    n_step = 1000
+    n_step = 100000
     fig1 = plt.figure()
     ax1 = fig1.add_subplot()  
     chemical_potentials=[]
@@ -28,7 +28,8 @@ def main():
         Ey=init_param[1]
         Ez=init_param[2]
         config_dict = init_states(N,Ex,Ey,Ez)
-        Ef=get_energy(N-1, config_dict, Ex,Ey, Ez)
+        #Ef=get_energy(N-1, config_dict, Ex,Ey, Ez)
+        Ef=fermi_energy(N,Lx,Ly,Lz)/(kb*T)
         energies_plot=np.linspace(0,100*Ex,1000)
         fermi_dirac=[fermi_distrib(E, Ef) for E in energies_plot]
         n_cut=5*min(Ncut(T,Ef,Lx,Ly,Lz))
@@ -110,7 +111,7 @@ def main():
             Fermi_Dirac_part_std.append(np.std(array))
         print(len(Fermi_Dirac_part_mean), len(list(distinct_energies)))
         popt, pcov= curve_fit(fit_fermi_dirac, np.array(list(distinct_energies)), np.array(Fermi_Dirac_part_mean))
-        xdata=np.linspace(0,7*Ef,1000)
+        xdata=np.linspace(0,5*Ef,1000)
         data=kb*T*xdata
         ax1.plot(data, fermi_dirac_temp((data), popt[0]*kb*T, T),label=f'{T} K',color=colors[c])
         chemical_potentials.append(popt[0]*kb*T)
@@ -119,17 +120,17 @@ def main():
 
     labelLines(ax1.get_lines(),zorder=2.5)
     #ax1.plot(energies_plot, fermi_dirac, label="Fermi-Dirac", linestyle="--", color="gray")
-    #ax1.set_xlim(0,7*Ef)
+    ax1.set_xlim(0,1.6*10**(-18))
     #ax1.axvline(x = Ef, label = 'Fermi Energy',linestyle='--')
     #ax1.set_ylim(0,max(Fermi_Dirac_part_mean)+0.1*max(Fermi_Dirac_part_mean))
     ax1.set_ylabel("Occupation number")
-    ax1.set_xlabel("Energy (dimensionless)")
+    ax1.set_xlabel("Energy")
     ax1.set_title("Fermi_Dirac distribution")
     plt.savefig(f'./img_simu/chem_potential')
 
     fig2 = plt.figure()
     ax2 = fig2.add_subplot()
-    ax2.plot(temp,chemical_potentials)
+    ax2.scatter(temp,chemical_potentials)
     ax2.set_ylabel("Chemical potential")
     ax2.set_xlabel("Temperature (K)")
     ax2.set_title("Chemical potential")

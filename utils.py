@@ -73,6 +73,8 @@ def init_states(N,Ex,Ey,Ez):
         config_dict[f'{c}'] = np.array([L1[l][1],L1[l][2],L1[l][3],-1])
         return(config_dict)
 
+def fermi_energy(N, Lx,Ly,Lz):
+    return (3*np.pi**2*N/(Lx*Ly*Lz))**(2/3)*hbar**2/(2*me)
 
 def Ncut(T,Ef,Lx,Ly,Lz):
     ET = 1/2*kb*T

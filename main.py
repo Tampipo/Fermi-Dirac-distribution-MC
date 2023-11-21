@@ -19,7 +19,7 @@ def main():
         n_step = int(input("Number of step :"))
     else:
         N = 50
-        T = 1000
+        T = 5000
         Lx = 10**(-8)
         Ly = 10**(-8)
         Lz = 10**(-8)
@@ -32,7 +32,8 @@ def main():
     Ey=init_param[1]
     Ez=init_param[2]
     config_dict = init_states(N,Ex,Ey,Ez)
-    Ef=get_energy(N-1, config_dict, Ex,Ey, Ez)
+    #Ef=get_energy(N-1, config_dict, Ex,Ey, Ez)
+    Ef=fermi_energy(N,Lx,Ly,Lz)/(kb*T)
     energies_plot=np.linspace(0,100*Ex,1000)
     fermi_dirac=[fermi_distrib(E, Ef) for E in energies_plot]
     #print(mu, T)
