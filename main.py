@@ -1,5 +1,5 @@
 from utils import *
-
+plt.rcParams['text.usetex'] = True
 
 
 
@@ -18,12 +18,12 @@ def main():
         Lz=float(input("Box dimensions z (m):"))
         n_step = int(input("Number of step :"))
     else:
-        N = 50
-        T = 5000
+        N = 100
+        T = 100
         Lx = 10**(-8)
         Ly = 10**(-8)
         Lz = 10**(-8)
-        n_step = 10000
+        n_step = 100000
  
     print("Initializing parameters...")
     print(Lx)
@@ -88,6 +88,8 @@ def main():
             if states_exists:
                 Fermi_Dirac[i][1]=k/(k+1)*Fermi_Dirac[i][1]+1/(k+1)
                 part.pop(index)
+            else:
+                Fermi_Dirac[i][1]=k/(k+1)*Fermi_Dirac[i][1]
         # print(len(Fermi_Dirac))
         
         #print(part)

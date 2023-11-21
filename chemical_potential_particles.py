@@ -2,18 +2,19 @@ from utils import *
 from labellines import labelLine, labelLines
 from scipy.optimize import curve_fit
 plt.rcParams['text.usetex'] = True
+
 def fit_fermi_dirac(x,a):
     return 1/(1+np.exp(x-a))
 
 def fermi_dirac_temp(E,mu,T):
     return 1/(1+np.exp((E-mu)/(kb*T)))
-temp=[2500,5000,7500,10000,12500,15000]
+Npart=[20,50,70,100,150,200]
 colors=["r", "b", "g", "m","c", "y"]
 
 
 def main():
     c=0
-    N = 100
+    T = 5000
     Lx = 10**(-8)
     Ly = 10**(-8)
     Lz = 10**(-8)
@@ -21,7 +22,7 @@ def main():
     fig1 = plt.figure()
     ax1 = fig1.add_subplot()  
     chemical_potentials=[]
-    for T in temp:
+    for N in Npart:
         print("Initializing parameters...")
         init_param=init(T,Lx,Ly,Lz)
         Ex=init_param[0]
@@ -115,9 +116,8 @@ def main():
         popt, pcov= curve_fit(fit_fermi_dirac, np.array(list(distinct_energies)), np.array(Fermi_Dirac_part_mean))
         xdata=np.linspace(0,5*Ef,1000)
         data=kb*T*xdata
-        ax1.plot(data, fermi_dirac_temp((data), popt[0]*kb*T, T),label=f'{T} K',color=colors[c])
-        chemical_potentials.append(popt[0]/Ef)
-        norm_temp=[1/Ef]
+        ax1.plot(data, fermi_dirac_temp((data), popt[0]*kb*T, T),label=f'N={N}',color=colors[c])
+        chemical_potentials.append(popt[0]*kb*T)
         ax1.scatter(np.array(list(distinct_energies))*kb*T,np.array(Fermi_Dirac_part_mean), color=colors[c])
         c+=1
 
@@ -130,15 +130,15 @@ def main():
     ax1.set_xlabel(r"$E$ (J)")
     ax1.set_title("Fermi Dirac distribution")
     plt.legend()
-    plt.savefig(f'./img_simu/chem_potential')
+    plt.savefig(f'./img_simu/chem_potential_part')
 
     fig2 = plt.figure()
     ax2 = fig2.add_subplot()
-    ax2.scatter(norm_temp,chemical_potentials)
-    ax2.set_ylabel(r"$\mu/E_{f}$")
-    ax2.set_xlabel(r"$T/T_{f}$")
+    ax2.scatter(Npart,chemical_potentials)
+    ax2.set_ylabel(r"$\mu$")
+    ax2.set_xlabel(r"$N$")
     ax2.set_title("Chemical potential")
-    plt.savefig(f'./img_simu/chem_potential_all_temps')
+    plt.savefig(f'./img_simu/chem_potential_all_parts')
 
 
 if __name__=="__main__":
