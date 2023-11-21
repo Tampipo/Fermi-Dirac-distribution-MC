@@ -18,7 +18,7 @@ def main():
     Lx = 10**(-8)
     Ly = 10**(-8)
     Lz = 10**(-8)
-    n_step = 1000
+    n_step = 100000
     fig1 = plt.figure()
     ax1 = fig1.add_subplot()  
     chemical_potentials=[]
@@ -50,7 +50,7 @@ def main():
         Fermi_Dirac=[[[0,0,0,-1],0]]
         for k in range(n_step):
             if k%(n_step/10)==0:
-                print(f'Step {k}, Temperature {T} K')
+                print(f'Step {k}, Number of particles {N}')
             liste = create_liste(N)
             for l in liste:
                 old_state = l
@@ -123,8 +123,8 @@ def main():
 
     #labelLines(ax1.get_lines(),zorder=1)
     #ax1.plot(kb*T*energies_plot, fermi_dirac, label="Fermi-Dirac", linestyle="--", color="gray")
-    ax1.set_xlim(0,0.8*10**(-18))
-    ax1.axvline(x = Ef*kb*T, label = 'Fermi Energy',linestyle='--')
+    ax1.set_xlim(0,2*Ef*kb*T)
+    #ax1.axvline(x = Ef*kb*T, label = 'Fermi Energy',linestyle='--')
     #ax1.set_ylim(0,max(Fermi_Dirac_part_mean)+0.1*max(Fermi_Dirac_part_mean))
     ax1.set_ylabel(r"$n(E)$")
     ax1.set_xlabel(r"$E$ (J)")
