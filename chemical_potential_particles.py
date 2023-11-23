@@ -14,7 +14,7 @@ colors=["r", "b", "g", "m","c", "y", "C1", "C6", "C7", "C4", "C2"]
 
 def main():
     c=0
-    T = 5000
+    T = 2000
     Lx = 10**(-8)
     Ly = 10**(-8)
     Lz = 10**(-8)
@@ -123,7 +123,7 @@ def main():
 
     #labelLines(ax1.get_lines(),zorder=1)
     #ax1.plot(kb*T*energies_plot, fermi_dirac, label="Fermi-Dirac", linestyle="--", color="gray")
-    ax1.set_xlim(0,2*Ef*kb*T)
+    ax1.set_xlim(0,1.3*10**(-18))
     #ax1.axvline(x = Ef*kb*T, label = 'Fermi Energy',linestyle='--')
     #ax1.set_ylim(0,max(Fermi_Dirac_part_mean)+0.1*max(Fermi_Dirac_part_mean))
     ax1.set_ylabel(r"$n(E)$")
@@ -134,10 +134,14 @@ def main():
 
     fig2 = plt.figure()
     ax2 = fig2.add_subplot()
-    ax2.scatter(Npart,chemical_potentials)
+    parts=np.linspace(1,210, 10000)
+    chem_theo=[chemical_potential_low_part(N,Lx,Ly,Lz,T) for N in parts]
+    ax2.scatter(Npart,chemical_potentials, label="Simulation")
+    ax2.plot(parts, chem_theo, label=r"Low $T$ theory", linestyle='--', color='r')
     ax2.set_ylabel(r"$\mu$")
     ax2.set_xlabel(r"$N$")
     ax2.set_title("Chemical potential")
+    plt.legend()
     plt.savefig(f'./img_simu/chem_potential_all_parts')
 
 

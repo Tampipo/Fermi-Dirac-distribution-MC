@@ -16,7 +16,7 @@ def main():
     N = 100
     Lx = 10**(-8)
     Ly = 10**(-8)
-    Lz = 10**(-8)
+    Lz = 10**(-12)
     n_step = 100000
     fig1 = plt.figure()
     ax1 = fig1.add_subplot()  
@@ -33,7 +33,8 @@ def main():
         Ef=fermi_energy(N,Lx,Ly,Lz)/(kb*T)
         energies_plot=np.linspace(0,100*Ex,1000)
         fermi_dirac=[fermi_dirac_temp(E*kb*T, Ef*kb*T,T) for E in energies_plot]
-        n_cut=5*min(Ncut(T,Ef,Lx,Ly,Lz))
+        #n_cut=5*min(Ncut(T,Ef,Lx,Ly,Lz))
+        n_cut=30
         print("**********Simulation parameters*********")
         print("Number of particles: ", N)
         print("Temperature: ", T, "(K)")

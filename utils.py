@@ -26,6 +26,12 @@ def chemical_potential_high(Tnorm):
     mu=3/2*Tnorm*np.log(4*np.pi/(6*np.pi**2)**(2/3)*(1/Tnorm))
     return mu
 
+def chemical_potential_low_part(N,Lx,Ly,Lz,T):
+    c=hbar**2/(2*me)*(3*np.pi**2/(Lx*Ly*Lz))**(2/3)
+    #print(c)
+    mu=c*N**(2/3)*(1-np.pi**2/12*T**2*kb**2/c**2*N**(-4/3))
+    return mu
+
 def init(T,Lx,Ly,Lz): #initialize parameters
     Ex=(hbar*2*np.pi)**2/(2*me*Lx**2*kb*T) #dimensionless energy in x direction
     Ey=(hbar*2*np.pi)**2/(2*me*Ly**2*kb*T) #y direction

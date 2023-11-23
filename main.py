@@ -19,7 +19,7 @@ def main():
         n_step = int(input("Number of step :"))
     else:
         N = 100
-        T = 100
+        T = 10
         Lx = 10**(-8)
         Ly = 10**(-8)
         Lz = 10**(-8)
