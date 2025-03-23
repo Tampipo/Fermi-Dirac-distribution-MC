@@ -1,0 +1,6 @@
+numpy
+matplotlib
+scipy
+tqdm
+joblib
+tqdm_joblib
